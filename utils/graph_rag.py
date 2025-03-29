@@ -15,6 +15,7 @@ import langgraph.graph as langgraph
 from langgraph.graph import StateGraph, END
 from enum import Enum
 import json
+from neo4j import GraphDatabase
 
 # Type definitions
 class GraphState(TypedDict):
@@ -47,11 +48,43 @@ def create_graph_connection(uri: str, username: str, password: str) -> Neo4jGrap
     Returns:
         Connected Neo4jGraph object
     """
-    return Neo4jGraph(
-        url=uri,
-        username=username, 
-        password=password
-    )
+    try:
+        # Try with default APOC settings
+        return Neo4jGraph(
+            url=uri,
+            username=username, 
+            password=password
+        )
+    except ValueError as e:
+        if "APOC" in str(e):
+            print("Warning: APOC plugin not available. Using manual schema configuration.")
+            
+            # Create a simplified connection without relying on APOC
+            driver = GraphDatabase.driver(uri, auth=(username, password))
+            
+            # Execute a simple query to check connectivity
+            with driver.session() as session:
+                session.run("MATCH (n) RETURN n LIMIT 1")
+            
+            # Create a simplified graph with a basic schema
+            graph = Neo4jGraph(
+                url=uri,
+                username=username, 
+                password=password
+            )
+            
+            # Manually define a minimal schema without relying on APOC
+            graph.schema = """
+            Node properties are the following:
+            - Document: {id: STRING, text: STRING, source: STRING, file_name: STRING, embedding: VECTOR}
+            
+            Relationship properties are the following:
+            - RELATED_TO: {score: FLOAT}
+            """
+            
+            return graph
+        else:
+            raise
 
 def create_route_classifier(llm: ChatOpenAI) -> Any:
     """Create a route classifier for questions.

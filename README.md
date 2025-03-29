@@ -41,6 +41,29 @@ cp .env.example .env
 # Edit the .env file with your Neo4j and OpenAI credentials
 ```
 
+### Setting up Neo4j with APOC
+
+The application requires the APOC plugin for Neo4j:
+
+#### For Neo4j Desktop:
+1. Open Neo4j Desktop
+2. Select your project and database
+3. Click on the "Plugins" tab
+4. Install the "APOC" plugin
+5. Restart your database
+
+#### For Neo4j AuraDB:
+APOC is already pre-installed on AuraDB instances.
+
+#### For Neo4j Server:
+1. Download the APOC plugin JAR file from [Neo4j Labs releases](https://github.com/neo4j/apoc/releases)
+2. Place the JAR file in the `plugins` directory of your Neo4j installation
+3. Add the following to your `neo4j.conf` file:
+   ```
+   dbms.security.procedures.unrestricted=apoc.*
+   ```
+4. Restart your Neo4j server
+
 ### Obtaining API Keys and Tokens
 
 #### OpenAI API Key
