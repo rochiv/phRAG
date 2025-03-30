@@ -2,6 +2,8 @@
 
 A proof of concept for Graph-based Retrieval Augmented Generation (GraphRAG) using Neo4j, LangChain, and LangGraph.
 
+- TODO: Workaround for simple_app.py
+
 ## 📝 Overview
 
 phRAG demonstrates how to build a GraphRAG application that combines:
