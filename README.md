@@ -2,8 +2,6 @@
 
 A proof of concept for Graph-based Retrieval Augmented Generation (GraphRAG) using Neo4j, LangChain, and LangGraph.
 
-- TODO: Workaround for simple_app.py
-
 ## 📝 Overview
 
 phRAG demonstrates how to build a GraphRAG application that combines:
@@ -129,20 +127,63 @@ python app.py
 
 This will start a Gradio web interface where you can ask questions about your documents.
 
-### 3. Deploying to Hugging Face Spaces
+### 3. Using the Simple Application (No APOC Required)
+
+If you don't have APOC installed in your Neo4j database, you can use the simplified version of the application:
+
+```bash
+python simple_app.py
+```
+
+#### Differences from the Main Application:
+
+- **No APOC Dependency**: The simple app doesn't require the APOC plugin for Neo4j.
+- **Direct Neo4j Driver**: Uses the Neo4j Python driver directly rather than LangChain's Neo4jGraph.
+- **Simpler Architecture**: Doesn't use LangGraph for workflow orchestration.
+- **Equivalent Features**: Still provides intelligent routing between vector search and graph queries.
+
+When to use the simple app:
+- During initial testing and development
+- If you're having trouble installing APOC
+- For quicker setup with Neo4j instances without APOC
+
+Both applications require document ingestion before use, so make sure to run `ingest.py` first.
+
+### 4. Deploying to Hugging Face Spaces
 
 To deploy the application to Hugging Face Spaces:
 
-1. Create a new Space on Hugging Face
-2. Configure the Space with your Neo4j and OpenAI credentials as secrets
-3. Upload the code to the Space
-4. The application will use `huggingface_app.py` as the entry point
+1. Create a new Space on Hugging Face:
+   - Go to [Hugging Face Spaces](https://huggingface.co/spaces)
+   - Click "Create Space"
+   - Choose a name for your space (e.g., "my-phrag-demo")
+   - Select SDK: Gradio
+   - Set the Space as "Public" or "Private"
+
+2. Configure GitHub repository secrets:
+   - Go to your GitHub repository
+   - Click on "Settings" → "Secrets and variables" → "Actions"
+   - Add the following secrets:
+     - `HF_TOKEN`: Your Hugging Face API token
+     - `HF_SPACE_NAME`: The name of your Hugging Face space (e.g., "yourusername/my-phrag-demo")
+
+3. Configure the Space with your Neo4j and OpenAI credentials as secrets:
+   - Go to your Hugging Face Space
+   - Click on "Settings" → "Repository secrets"
+   - Add your Neo4j and OpenAI credentials:
+     - `NEO4J_URI`
+     - `NEO4J_USERNAME`
+     - `NEO4J_PASSWORD`
+     - `OPENAI_API_KEY`
+
+4. Push your code to the main branch to trigger the automatic deployment.
 
 ## 🧩 Project Structure
 
 ```
 phRAG/
 ├── app.py                # Main application with Gradio interface
+├── simple_app.py         # Simplified application (no APOC required)
 ├── huggingface_app.py    # Hugging Face Spaces compatible version
 ├── ingest.py             # Document ingestion script
 ├── environment.yml       # Conda environment definition

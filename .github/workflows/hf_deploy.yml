@@ -28,4 +28,15 @@ jobs:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
           SPACE_NAME: ${{ secrets.HF_SPACE_NAME }}
         run: |
-          python -c "from huggingface_hub import HfApi; HfApi().upload_folder(folder_path='.', repo_id='$SPACE_NAME', repo_type='space', token='$HF_TOKEN', ignore_patterns=['.*', 'venv/*', '__pycache__/*'])" 
+          if [ -z "$SPACE_NAME" ]; then
+            echo "Error: SPACE_NAME is not set. Please add HF_SPACE_NAME as a repository secret."
+            exit 1
+          fi
+          
+          if [ -z "$HF_TOKEN" ]; then
+            echo "Error: HF_TOKEN is not set. Please add HF_TOKEN as a repository secret."
+            exit 1
+          fi
+          
+          echo "Deploying to Hugging Face Space: $SPACE_NAME"
+          python -c "from huggingface_hub import HfApi; HfApi().upload_folder(folder_path='.', repo_id='${SPACE_NAME}', repo_type='space', token='${HF_TOKEN}', ignore_patterns=['.*', 'venv/*', '__pycache__/*'])" 
